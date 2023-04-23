@@ -4,6 +4,14 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const dataInput = document.querySelector('#datetime-picker');
 const startBtn = document.querySelector('button[data-start]');
+const daysEl = document.querySelector('[data-days]');
+const hoursEl = document.querySelector('[data-hours]');
+const minutesEl = document.querySelector('[data-minutes]');
+const secondsEl = document.querySelector('[data-seconds]');
+
+let selectedDate = null;
+let id;
+
 startBtn.disabled = true;
 
 const options = {
@@ -11,23 +19,31 @@ const options = {
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-    onClose(selectedDates) {
-        if (selectedDates[0] > options.defaultDate) {
-           startBtn.disabled = false;
+  onClose(selectedDates) {
+    if (selectedDates[0] - Date.now() > 0) {
+         selectedDate = selectedDates[0];
+         startBtn.disabled = false;
         } else {
-             Notify.failure("Please choose a date in the future");
-        }
-  },
+          Notify.failure("Please choose a date in the future");
+      }
+   },
 };
+
 flatpickr(dataInput, options);
 
 startBtn.addEventListener('click', onStartClick);
 
 function onStartClick() {
-    const curr = dataInput.value;
-   console.log(getSeconds(curr));
+  startBtn.disabled = true;
+  id=setInterval(() => {
+    if (selectedDate - Date.now() < 0) {
+      clearInterval(id);
+    } else {
+      console.log(convertMs(selectedDate - Date.now()));
+    }
+    }, 1000);
+}
 
- }
 function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
@@ -44,11 +60,9 @@ function convertMs(ms) {
   // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
+    daysEl.textContent = days.toString().padStart(2,"0");
+    hoursEl.textContent = hours.toString().padStart(2,"0");
+    minutesEl.textContent = minutes.toString().padStart(2,"0");
+    secondsEl.textContent = seconds.toString().padStart(2,"0");
   return { days, hours, minutes, seconds };
 }
-
-// console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-// console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-// console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
-
-// addLeadingZero(value)
