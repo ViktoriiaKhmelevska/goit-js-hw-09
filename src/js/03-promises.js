@@ -13,9 +13,9 @@ function createPromise(position, delayVal) {
   const shouldResolve = Math.random() > 0.3;
     setTimeout(() => {
       if (shouldResolve) {
-        resolve(Notify.success(`✅ Fulfilled promise ${position} in ${delayVal}ms`));
+        resolve();
       } else {
-        reject(Notify.failure(`❌ Rejected promise ${position} in ${delayVal}ms`));
+        reject();
       }
     }, delayVal);
   })
@@ -27,14 +27,14 @@ function onSubmit(evt) {
 
   const { delay, step, amount } = evt.currentTarget.elements;
 
-  stepVal = step.value;
-  delayVal = delay.value;
+  stepVal = Number(step.value);
+  delayVal = Number(delay.value);
   amountVal = amount.value;
 
-  for (let i = 1; i <= amountVal; i++) {
-  createPromise(i, delayVal)
-  .then(data => console.log(data))
-  .catch(err =>console.log(err));
+  for (let position = 1; position <= amountVal; position++) {
+  createPromise(position, delayVal)
+  .then(resolve => Notify.success(`✅ Fulfilled promise ${position} in ${delayVal}ms`))
+  .catch(reject => Notify.failure(`❌ Rejected promise ${position} in ${delayVal}ms`));
   delayVal += stepVal;
   };
   };
