@@ -3,6 +3,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 let delayVal;
 let amountVal;
 let stepVal;
+let startPoint=0;
 
 const form = document.querySelector('.form');
 
@@ -13,9 +14,9 @@ function createPromise(position, delayVal) {
   const shouldResolve = Math.random() > 0.3;
     setTimeout(() => {
       if (shouldResolve) {
-        resolve();
+        resolve({position, delayVal});
       } else {
-        reject();
+        reject({position, delayVal});
       }
     }, delayVal);
   })
@@ -27,14 +28,15 @@ function onSubmit(evt) {
 
   const { delay, step, amount } = evt.currentTarget.elements;
 
-  stepVal = Number(step.value);
   delayVal = Number(delay.value);
+  stepVal = Number(step.value);
   amountVal = amount.value;
-
-  for (let position = 1; position <= amountVal; position++) {
-  createPromise(position, delayVal)
-  .then(resolve => Notify.success(`✅ Fulfilled promise ${position} in ${delayVal}ms`))
-  .catch(reject => Notify.failure(`❌ Rejected promise ${position} in ${delayVal}ms`));
-  delayVal += stepVal;
+  startPoint = delayVal;
+  
+  for (let i = 1; i <= amountVal; i++) {
+      createPromise(i, delayVal)
+  .then(resolve => Notify.success(`✅ Fulfilled promise ${i} in ${startPoint+(i-1)*stepVal}ms`))
+    .catch(reject => Notify.failure(`❌ Rejected promise ${i} in ${startPoint+(i-1)*stepVal}ms`));
+          delayVal += stepVal;
   };
   };

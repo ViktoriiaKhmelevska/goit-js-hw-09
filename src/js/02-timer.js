@@ -39,7 +39,7 @@ function onStartClick() {
     if (selectedDate - Date.now() < 0) {
       clearInterval(id);
     } else {
-      console.log(convertMs(selectedDate - Date.now()));
+      convertMs(selectedDate - Date.now());
     }
     }, 1000);
 }
